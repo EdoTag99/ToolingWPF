@@ -1,0 +1,318 @@
+﻿<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ToolingWPF"
+        xmlns:viewmodel="clr-namespace:ToolingWPF.ViewModel"
+        xmlns:commands="clr-namespace:ToolingWPF.Commands"
+        x:Class="ToolingWPF.MainWindow"
+        mc:Ignorable="d"
+        Title="Tooling Controller"
+        Height="940"
+        Width="1100"
+        WindowStartupLocation="CenterScreen"
+        Background="Gray"
+        Focusable="True">
+    <Window.DataContext>
+        <viewmodel:MainViewModel />
+    </Window.DataContext>
+    <StackPanel>
+        <StackPanel x:Name="PressPanel"
+                    Background="LightGray">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="7*" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0"
+                           FontSize="20"
+                           FontWeight="Bold"
+                           Margin="20"
+                           Text="PRESS" />
+                <ComboBox x:Name="PressCombo"
+                          Grid.Column="1"
+                          HorizontalAlignment="Left"
+                          Width="60"
+                          Height="35"
+                          ItemsSource="{Binding PressBars}"
+                          FontSize="18"
+                          FontWeight="Bold"
+                          SelectedIndex="{Binding SelectedPressItem}"
+                          SelectedItem="{Binding SelectedPress}" />
+                <Button Grid.Column="3"
+                        HorizontalAlignment="Right"
+                        Width="35"
+                        Height="35"
+                        Margin="10"
+                        Content="↻"
+                        FontSize="20"
+                        VerticalContentAlignment="Top"
+                        Command="{Binding ReloadCommand}" />
+            </Grid>
+            <ItemsControl ItemsSource="{Binding ToolPresses}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <Canvas x:Name="PressBar"
+                                Width="1000"
+                                Height="50"
+                                Background="Transparent"
+                                AllowDrop="True"
+                                commands:EventBehaviourCommands.DropCommand="{Binding DropCommand}" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <local:UCToolPress />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+                <ItemsControl.ItemContainerStyle>
+                    <Style TargetType="ContentPresenter">
+                        <Setter Property="Canvas.Left"
+                                Value="{Binding Position}" />
+                    </Style>
+                </ItemsControl.ItemContainerStyle>
+            </ItemsControl>
+            <Rectangle Width="1000"
+                       Height="25"
+                       Fill="DarkGray"
+                       Margin="20,20,20,20" />
+            <StackPanel Orientation="Horizontal"
+                        HorizontalAlignment="Center">
+                <Button x:Name="RemoveAll"
+                        Content="Remove All Tools"
+                        FontSize="20"
+                        FontWeight="Bold"
+                        Width="200"
+                        Margin="0,0,20,20"
+                        Command="{Binding RemoveAllToolsCommand}"
+                        Visibility="Visible" />
+                <Button x:Name="SaveAsRecipe"
+                        Content="Save As Recipe"
+                        FontSize="20"
+                        FontWeight="Bold"
+                        Width="200"
+                        Margin="20,0,0,20"
+                        Command="{Binding SaveBarAsRecipeCommand}"
+                        Visibility="Visible" />
+            </StackPanel>
+        </StackPanel>
+        <StackPanel x:Name="MagazinePanel"
+                    Background="LightGray"
+                    Orientation="Vertical"
+                    Margin="0,30,0,30"
+                    AllowDrop="True"
+                    commands:EventBehaviourCommands.DropCommand="{Binding DropCommand}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="150" />
+                    <ColumnDefinition Width="80" />
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0"
+                           FontSize="20"
+                           FontWeight="Bold"
+                           Margin="20"
+                           Width="Auto"
+                           Text="MAGAZINE" />
+                <ComboBox Grid.Column="1"
+                          Width="60"
+                          Height="35"
+                          ItemsSource="{Binding Magazines}"
+                          FontSize="18"
+                          FontWeight="Bold"
+                          SelectedIndex="{Binding SelectedMagazineItem}"
+                          SelectedItem="{Binding SelectedMagazine}">
+                    <ComboBox.Style>
+                        <Style TargetType="ComboBox">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding MagazineMode}"
+                                             Value="False">
+                                    <Setter Property="Visibility"
+                                            Value="Hidden" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding MagazineMode}"
+                                             Value="True">
+                                    <Setter Property="Visibility"
+                                            Value="Visible" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ComboBox.Style>
+                </ComboBox>
+                <StackPanel Orientation="Horizontal"
+                            Grid.Column="3"
+                            HorizontalAlignment="Right">
+                    <TextBlock Text="Magazine Mode:"
+                               FontSize="20"
+                               FontWeight="Bold"
+                               Margin="10"
+                               VerticalAlignment="Center" />
+                    <ToggleButton Width="80"
+                                  Height="40"
+                                  FontSize="20"
+                                  Margin="10"
+                                  FontWeight="Bold"
+                                  Background="Gray"
+                                  IsChecked="{Binding MagazineMode}"
+                                  commands:EventBehaviourCommands.ToggleCommand="{Binding ToggleCommand}">
+                        <ToggleButton.Style>
+                            <Style TargetType="ToggleButton">
+                                <Style.Triggers>
+                                    <Trigger Property="IsChecked"
+                                             Value="True">
+                                        <Setter Property="Content"
+                                                Value="Single" />
+                                    </Trigger>
+                                    <Trigger Property="IsChecked"
+                                             Value="False">
+                                        <Setter Property="Content"
+                                                Value="All" />
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ToggleButton.Style>
+                    </ToggleButton>
+                </StackPanel>
+            </Grid>
+            <ItemsControl ItemsSource="{Binding MagazineTools}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <local:UCMagazineToolPress />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </StackPanel>
+        <StackPanel x:Name="LoadRecipePanel"
+                    Background="LightGray"
+                    Height="300">
+            <TextBlock FontSize="20"
+                       FontWeight="Bold"
+                       Margin="20"
+                       Text="LOAD RECIPE" />
+            <Canvas>
+                <TextBlock Text="Recipe:"
+                           FontSize="25"
+                           Canvas.Left="20"
+                           Canvas.Top="10" />
+                <ComboBox x:Name="ComboRecipeList"
+                          Width="200"
+                          Height="33"
+                          FontSize="20"
+                          Canvas.Left="110"
+                          Canvas.Top="10"
+                          ItemsSource="{Binding Recipes}"
+                          SelectedItem="{Binding SelectedRecipe}" />
+                <Button x:Name="LoadRecipeBtn"
+                        Width="100"
+                        Height="50"
+                        Content="IMPORT"
+                        FontSize="20"
+                        FontWeight="Bold"
+                        Background="Red"
+                        Canvas.Left="350"
+                        CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Canvas}}"
+                        Command="{Binding ImportRecipeCommand}" />
+                <Button x:Name="DeleteRecipe"
+                        Width="150"
+                        Height="50"
+                        Content="Delete Recipe"
+                        FontSize="18"
+                        FontWeight="Bold"
+                        Background="Gray"
+                        Canvas.Left="500"
+                        CommandParameter="{Binding ElementName=ComboRecipeList}"
+                        Command="{Binding DeleteRecipeCommand}"
+                        Visibility="Visible" />
+                <Button x:Name="AddRecipe"
+                        Width="150"
+                        Height="50"
+                        Content="Add New Recipe"
+                        FontSize="18"
+                        FontWeight="Bold"
+                        Background="Gray"
+                        Canvas.Left="700"
+                        Command="{Binding AddRecipeCommand}" />
+                <Button x:Name="Validation"
+                        Width="110"
+                        Height="50"
+                        Content="Validation"
+                        FontSize="18"
+                        FontWeight="Bold"
+                        Background="Gray"
+                        Canvas.Left="900"
+                        Command="{Binding ValidationCommand}" />
+                <TextBlock x:Name="Coordinates"
+                           Canvas.Bottom="10"
+                           Canvas.Left="10" />
+                <TextBlock x:Name="ImportResult"
+                           Text="{Binding Response.Message, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                           FontSize="25"
+                           Canvas.Top="130"
+                           Canvas.Left="125"
+                           Visibility="Visible" />
+                <Canvas x:Name="ErrorPoligon"
+                        Canvas.Top="100"
+                        Canvas.Left="20">
+                    <Polygon Points="0,80 50,0 100,80"
+                             Stroke="Black"
+                             StrokeThickness="2"
+                             Fill="Yellow" />
+                    <TextBlock Text="!"
+                               FontSize="60"
+                               FontWeight="Bold"
+                               Canvas.Left="40"
+                               Canvas.Top="5" />
+                    <Canvas.Style>
+                        <Style TargetType="Canvas">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Response.Data}"
+                                             Value="true">
+                                    <Setter Property="Visibility"
+                                            Value="Hidden" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Response.Data}"
+                                             Value="false">
+                                    <Setter Property="Visibility"
+                                            Value="Visible" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Canvas.Style>
+                </Canvas>
+                <Canvas x:Name="SuccessEllipse"
+                        Canvas.Top="100"
+                        Canvas.Left="20">
+                    <Ellipse Width="100"
+                             Height="100"
+                             Fill="Green"
+                             Stroke="Black"
+                             StrokeThickness="2" />
+                    <TextBlock Text="✓"
+                               FontSize="60"
+                               FontWeight="Bold"
+                               Canvas.Left="27"
+                               Canvas.Top="5" />
+                    <Canvas.Style>
+                        <Style TargetType="Canvas">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Response.Data}"
+                                             Value="true">
+                                    <Setter Property="Visibility"
+                                            Value="Visible" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Response.Data}"
+                                             Value="false">
+                                    <Setter Property="Visibility"
+                                            Value="Hidden" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Canvas.Style>
+                </Canvas>
+            </Canvas>
+        </StackPanel>
+    </StackPanel>
+</Window>
